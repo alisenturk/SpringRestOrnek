@@ -15,7 +15,7 @@ public class ErrorHandler implements Serializable,Runnable {
 	private String strLineNumber 	= "";
 	private String strMethodName	= "";
 	private String strErrorMessage	= "";
-	private Class  className;	
+	private Class<?>  className;	
 	private Exception exception;
 	private String	userName;
 	private String	logtype 		= "error";
@@ -29,13 +29,13 @@ public class ErrorHandler implements Serializable,Runnable {
 	public ErrorHandler(Exception e){
 		this(ErrorHandler.class, e);	
 	}
-	public ErrorHandler(Class c,Exception e){
+	public ErrorHandler(Class<?> c,Exception e){
 		this(c, e,"");
 	}	
-	public ErrorHandler(Class c,Exception e,String username){
+	public ErrorHandler(Class<?> c,Exception e,String username){
 		this(c, e, username, "error");
 	}
-	public ErrorHandler(Class c,Exception e,String username,String logtype){
+	public ErrorHandler(Class<?> c,Exception e,String username,String logtype){
 		this.className = c;
 		this.exception = e;
 		this.userName  = username;
@@ -141,11 +141,11 @@ public class ErrorHandler implements Serializable,Runnable {
 		this.strErrorMessage = strErrorMessage;
 	}
 
-	public Class getClassName() {
+	public Class<?> getClassName() {
 		return className;
 	}
 
-	public void setClassName(Class className) {
+	public void setClassName(Class<?> className) {
 		this.className = className;
 	}
 
