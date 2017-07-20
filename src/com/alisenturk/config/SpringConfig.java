@@ -1,7 +1,6 @@
 package com.alisenturk.config;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -19,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.CacheControl;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,11 +32,14 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.alisenturk.model.base.ActiveTokenList;
 import com.alisenturk.util.Helper;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "tr.com.halkbank")
+@ComponentScan(basePackages = "com.alisenturk")
 @EnableCaching(proxyTargetClass = true)
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -44,8 +47,7 @@ public class SpringConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder(){
-		PasswordEncoder encoder = new BCryptPasswordEncoder();
-		return encoder;
+		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean(name="activeTokenList")
@@ -56,7 +58,6 @@ public class SpringConfig extends WebMvcConfigurerAdapter {
 		atl.setTokenList(set);
 		return atl;
 	}
-	
 	
 	
 	@Bean
@@ -95,7 +96,7 @@ public class SpringConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public EhCacheManagerFactoryBean EhCacheCacheManager() {
 		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-		cmfb.setConfigLocation(new ClassPathResource("tr/com/halkbank/resources/ehcache.xml"));
+		cmfb.setConfigLocation(new ClassPathResource("com/alisenturk/resources/ehcache.xml"));
 		cmfb.setShared(true);
 		return cmfb;
 	}
@@ -111,20 +112,26 @@ public class SpringConfig extends WebMvcConfigurerAdapter {
 
 	
 	
-	/*
 	
-	@Bean(name="dataSource")
-	  public DataSource getDataSource() {
+	
+	@Bean(name="dataSourceSpring")
+	public DataSource getDataSource() {
 		
-        
-		DriverManagerDataSource dataSource = null;
-	    String driverClassName 	= "com.ibm.db2.jcc.DB2Driver";
+		String driverClassName 	= "com.ibm.db2.jcc.DB2Driver";
 	    String url 				=  Helper.getAppMessage("db2.url");	     
 	    String username 		= Helper.getAppMessage("db2.userId");	     
 	    String password 		= Helper.getAppMessage("db2.password");
 	    
+	    final HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName(driverClassName);
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);        
+        hikariConfig.setConnectionTimeout(10000);        
+        hikariConfig.setConnectionTestQuery("SELECT 1 FROM SYSIBM.SYSDUMMY1");
+	    
 	    Properties prop = new Properties();	   
-	    prop.put("initialSize",20);
+	    prop.put("initialSize",5);
 	    prop.put("removeAbandoned",true);
 	    prop.put("maxActive", 100);
 	    prop.put("minIdle", 1);
@@ -132,15 +139,19 @@ public class SpringConfig extends WebMvcConfigurerAdapter {
 	    prop.put("validationQuery","select 1 from sysibm.sysdummy1");
 	    prop.put("testOnBorrow", true);
 	    
-	    dataSource = new DriverManagerDataSource(url,prop);
+	    DriverManagerDataSource dataSource = new DriverManagerDataSource(url,prop);
 	    dataSource.setDriverClassName(driverClassName);
 	    dataSource.setUrl(url);
 	    dataSource.setUsername(username);
 	    dataSource.setPassword(password);
-	    System.out.println("dataSource...:" + dataSource.toString() + " -> " + new Date());
-	    return dataSource;
-	  } */
+	    
+	    hikariConfig.setDataSource(dataSource);
+	    
+        HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
+        return hikariDataSource;	   
 
+	} 
+	
 	/*
 	@Bean
 	public DataSource dataSource(){

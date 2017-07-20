@@ -65,9 +65,8 @@ public class HashGenerator<T> {
 		hashVal.append("{");
 		List<String> listFields = Arrays.asList(fields);
 		Class<? extends Object> clzz = t.getClass();
-		boolean todayAdded = false;
+		boolean todayAdded = false;		
 		for(Field field:clzz.getDeclaredFields()){
-			
 			if(listFields.contains(field.getName())){
 				hashVal.append("\""+field.getName()+"\":\""+ readFieldValue(t, field.getName()) + "\",");
 			}else if(!todayAdded && listFields.contains("today")){
@@ -75,7 +74,6 @@ public class HashGenerator<T> {
 				hashVal.append("\"today\":\""+ Helper.date2String(new Date()) + "\",");				
 			}
 		}
-				
 		String strHash = "";
 		if(hashVal.toString().length()>3){			
 			strHash = hashVal.toString().substring(0,hashVal.toString().length()-1) + "}";

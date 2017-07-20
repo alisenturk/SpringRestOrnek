@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.alisenturk.model.base.ActiveTokenList;
 
 @Configuration
-@ComponentScan(basePackages = { "tr.com.halkbank" }, excludeFilters = { @Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+@ComponentScan(basePackages = { "com.alisenturk" }, excludeFilters = { @Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
 @EnableScheduling
 @EnableCaching(proxyTargetClass = true)
 @EnableAspectJAutoProxy

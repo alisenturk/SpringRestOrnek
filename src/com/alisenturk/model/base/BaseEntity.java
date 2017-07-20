@@ -2,14 +2,28 @@ package com.alisenturk.model.base;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+
 public class BaseEntity  implements BaseObject{
 
 	private static final long serialVersionUID = -2267474469482968581L;
 	private Long    id;   
+	
+	@JsonInclude(Include.NON_NULL)
     private Status  status;
+	
+	@JsonInclude(Include.NON_NULL)
     private Date    creationDate;
+	
+	@JsonInclude(Include.NON_NULL)
     private Date    updateDate;
+	
+	@JsonInclude(Include.NON_NULL)
     private Long    createdBy;
+	
+	@JsonInclude(Include.NON_NULL)
     private Long    updatedBy;
     
 	public Long getId() {
@@ -48,12 +62,19 @@ public class BaseEntity  implements BaseObject{
 	public void setUpdatedBy(Long updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-	
+	@Override
+	public String getObjectDetail() {
+		return "";
+	}
 	@Override
 	public String getObjectKey() {		
 		return "";
 	}
-	
+	@Override
+	public boolean isViewEveryone() {
+		return true;
+	}
+    
     
     
 	

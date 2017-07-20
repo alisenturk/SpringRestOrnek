@@ -55,8 +55,8 @@ import sun.net.www.http.HttpClient;
 
 public class Helper {
 			
-	private static final String PROJECT_CONFIG_BUNDLE_NAME 	= "tr.com.halkbank.resources.ProjectConfig";
-	private static final String PROJECT_MESSAGE_BUNDLE_NAME 	= "tr.com.halkbank.resources.Imece";
+	private static final String PROJECT_CONFIG_BUNDLE_NAME 	= "com.alisenturk.resources.ProjectConfig";
+	private static final String PROJECT_MESSAGE_BUNDLE_NAME 	= "com.alisenturk.resources.Imece";
 	
 	private Helper(){
 	}
