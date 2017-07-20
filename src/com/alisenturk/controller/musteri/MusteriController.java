@@ -2,6 +2,8 @@ package com.alisenturk.controller.musteri;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -32,8 +34,7 @@ import com.alisenturk.util.Helper;
 
 @RestController
 @RequestMapping("/musteri")
-//@Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class MusteriController implements BaseController {
+public class MusteriController extends BaseController {
 	
 	@Autowired
 	IMusteriDAO musteriDAO;
@@ -51,12 +52,12 @@ public class MusteriController implements BaseController {
 													@RequestHeader(name="hbtoken",defaultValue="bos") String token,
 													@RequestHeader(name="hbenlem",defaultValue="-1") String enlem,
 													@RequestHeader(name="hbboylam",defaultValue="-1") String boylam,
-													Kullanici kullanici
+													HttpServletRequest req 
 												 ){
 		ResponseData<List<Musteri>> response = new ResponseData<>();
 		try{
 			
-			response = musteriDAO.musteriAraList(kriter.getKullanici(),kriter);
+			response = musteriDAO.musteriAraList(getKullaniciFromRequest(req),kriter);
 			if(!response.getData().isEmpty()){
 				response.setStatusCode(ResponseStatus.OK.getCode());
 				response.setStatusMessage("");
@@ -83,7 +84,8 @@ public class MusteriController implements BaseController {
 	public ResponseData<String> musteriNotlariGiris(	@RequestBody MusteriNotu not,
 														@RequestHeader(name="hbtoken",defaultValue="bos") String token,
 												  	  	@RequestHeader(name="hbenlem",defaultValue="-1") String enlem,
-												  	  	@RequestHeader(name="hbboylam",defaultValue="-1") String boylam){
+												  	  	@RequestHeader(name="hbboylam",defaultValue="-1") String boylam,
+												  	  	HttpServletRequest req){
 		ResponseData<String> response = new ResponseData<String>();
 		try{
 			
@@ -103,7 +105,7 @@ public class MusteriController implements BaseController {
 				throw new HBRuntimeException("Uyumsuz hash değeri!");
 			}
 			not.setNotTipKod(MusteriNotu.NOT_TIP_ZIYARET);
-			//not.setOperatorId(getKullanici().getKullaniciAdi());
+			not.setOperatorId(getKullaniciFromRequest(req).getKullaniciAdi());
 			not.setStatus(Status.AKTIF);
 			//response = ziyaretNotDAO.saveMusteriNotu(not);
 			

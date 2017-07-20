@@ -11,6 +11,7 @@ public class Constants {
 	public static final boolean			ELASTIC_WRITE_UNSYNC	= true; 
 	public static final String			APP_NAME				= "SpringRest";
 	public static final ThreadGroup		THREAD_GROUP			= new ThreadGroup(APP_NAME + "_THREAD");
+	public static final String			REQ_USER_PARAM_NAME		= "kullanici";
 	
 	
 }

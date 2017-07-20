@@ -18,14 +18,7 @@ public class MusteriAramaKriterleri implements BaseObject {
 	private int			subeKodu  	= 0;
 	private int 		gun			= 0;
 	private String		objectKey	= "";
-	private Kullanici	kullanici;
 	
-	public Kullanici getKullanici() {
-		return kullanici;
-	}
-	public void setKullanici(Kullanici kullanici) {
-		this.kullanici = kullanici;
-	}
 	public long getMusteriNo() {
 		return musteriNo;
 	}

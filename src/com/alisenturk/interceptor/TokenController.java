@@ -2,6 +2,8 @@ package com.alisenturk.interceptor;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StopWatch;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alisenturk.annotations.TokenControl;
 import com.alisenturk.config.Constants;
@@ -39,7 +43,7 @@ public class TokenController {
 	@Qualifier(value="activeTokenList")
 	ActiveTokenList activeTokenList; 
 	
-	@Around(value="execution(* com.alisenturk.controller..*.*(..)) && @annotation(com.alisenturk.annotations.TokenControl)")
+	@Around(value="execution(* tr.com.halkbank.controller..*.*(..)) && @annotation(tr.com.halkbank.annotations.TokenControl)")
     public Object tokenKontrol(ProceedingJoinPoint joinPoint) { 
         Object result = null;
         StopWatch stopWatch = new StopWatch();
@@ -57,8 +61,9 @@ public class TokenController {
     	    
     	    TokenControl tokenCtrl = method.getAnnotation(TokenControl.class);
     	    int tokenIndex = -1;
-        	int currentUserIndex = -1;
-        	int kullaniciIndex = -1;
+        	
+        	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        	
             if(joinPoint.getArgs()!=null && joinPoint.getArgs().length>0){
             	
             	int indx = -1;		
@@ -66,12 +71,6 @@ public class TokenController {
             		indx++;
             		if("token".equals(name)){
             			tokenIndex = indx;            			            			
-            		}
-            		if("currentUser".equals(name)){
-            			currentUserIndex = indx;
-            		}
-            		if("kullanici".equals(name)) {
-            			kullaniciIndex = indx;
             		}
             	}
             	
@@ -88,8 +87,6 @@ public class TokenController {
             	if(!invalidToken){
             		tokenGecerli = tokenDAO.tokenGecerliMiWithTime(token);
             	}
-            	
-            	
             	
     			if (invalidToken || tokenGecerli[0]==0){
     				result = "Invalid token!"; 
@@ -109,7 +106,7 @@ public class TokenController {
     				
     				Object target = joinPoint.getTarget();
                 	if(tokenCtrl.kullaniciDogrulamasi() && target instanceof BaseController){
-                		//BaseController bc = (BaseController)target;
+                		BaseController bc = (BaseController)target;
                 		Kullanici kullanici = kullaniciDAO.araKullaniciToken(token);
             			if(kullanici==null){
             				result = "Kullanıcı bulunamadı![token]:" + token; 
@@ -120,8 +117,10 @@ public class TokenController {
         	    				result = response;
             				}
             			}else{
-            				//bc.setKullanici(kullanici);
-            				joinPoint.getArgs()[kullaniciIndex] = kullanici;
+            				if(request!=null && kullanici!=null){
+            					request.setAttribute(Constants.REQ_USER_PARAM_NAME,kullanici);
+            				}
+            				
 							result = joinPoint.proceed();
             			}	                		
                 	}else{
